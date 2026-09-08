@@ -54,7 +54,7 @@ namespace api.Controllers
       return CreatedAtAction(nameof(GetById), new { id = newStock.Id }, newStock.ToStockDto());
     }
 
-    [HttpPut("{id}")] 
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateStockRequestDto stock)
     {
       var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);
@@ -70,22 +70,22 @@ namespace api.Controllers
       existingStock.Industry = stock.Industry;
       existingStock.MarketCap = stock.MarketCap;
 
-      _context.Stocks.Update(existingStock);
-      _context.SaveChanges();
+      await _stockRepository.UpdateStockAsync(existingStock);
+
       return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-      var stock = await _context.Stocks.FindAsync(id);
+      var stock = await _stockRepository.GetStockByIdAsync(id);
       if (stock == null)
       {
         return NotFound();
       }
 
-      _context.Stocks.Remove (stock);
-      await _context.SaveChangesAsync();
+      await _stockRepository.DeleteStockAsync(id);
+
       return NoContent();
     }
   }

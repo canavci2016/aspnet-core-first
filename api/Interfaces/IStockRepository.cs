@@ -10,6 +10,9 @@ namespace api.Interfaces
     {
 
       Task<List<Stock>> GetAllStocksAsync();
-        
+      Task<Stock?> GetStockByIdAsync(int id);
+      Task<Stock> CreateStockAsync(Stock stock);
+      Task UpdateStockAsync(Stock stock);
+      Task DeleteStockAsync(int id);
     }
 }
