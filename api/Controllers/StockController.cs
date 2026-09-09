@@ -57,40 +57,15 @@ namespace api.Controllers
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateStockRequestDto stock)
     {
-      var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);
-      if (existingStock == null)
-      {
-        return NotFound();
-      }
-
-      existingStock.Symbol = stock.Symbol;
-      existingStock.CompanyName = stock.CompanyName;
-      existingStock.Price = stock.Price;
-      existingStock.LastDiv = stock.LastDiv;
-      existingStock.Industry = stock.Industry;
-      existingStock.MarketCap = stock.MarketCap;
-
-      await _stockRepository.UpdateStockAsync(existingStock);
-
+      await _stockRepository.UpdateStockAsync(id, stock);
       return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-      var stock = await _stockRepository.GetStockByIdAsync(id);
-      if (stock == null)
-      {
-        return NotFound();
-      }
-
       await _stockRepository.DeleteStockAsync(id);
-
       return NoContent();
     }
-  }
-
-  public interface IActionResult<T>
-  {
   }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -46,10 +47,23 @@ namespace api.Repository
       return await _context.Stocks.FindAsync(id);
     }
 
-    public async Task UpdateStockAsync(Stock stock)
+    public async Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto stock)
     {
-      _context.Stocks.Update(stock);
+      var existingStock = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);
+      if (existingStock == null)
+      {
+        return null;
+      }
+      existingStock.Symbol = stock.Symbol;
+      existingStock.CompanyName = stock.CompanyName;
+      existingStock.Price = stock.Price;
+      existingStock.LastDiv = stock.LastDiv;
+      existingStock.Industry = stock.Industry;
+      existingStock.MarketCap = stock.MarketCap;
+
+      _context.Stocks.Update(existingStock);
       await _context.SaveChangesAsync();
+      return existingStock;
     }
   }
 }
