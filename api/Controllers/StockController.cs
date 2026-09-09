@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using api.Data;
 using api.Dtos;
 using api.Interfaces;
 using api.Mappers;
-using api.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -17,12 +14,10 @@ namespace api.Controllers
   public class StockController : ControllerBase
   {
 
-    private readonly ApplicationDbContext _context;
     private readonly IStockRepository _stockRepository;
 
-    public StockController(ApplicationDbContext context, IStockRepository stockRepository)
+    public StockController(IStockRepository stockRepository)
     {
-      _context = context;
       _stockRepository = stockRepository;
     }
 
@@ -37,7 +32,7 @@ namespace api.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<StockDto>> GetById(int id)
     {
-      var stock = await _context.Stocks.FindAsync(id);
+      var stock = await _stockRepository.GetStockByIdAsync(id);
       if (stock == null)
       {
         return NotFound();
@@ -47,10 +42,8 @@ namespace api.Controllers
     [HttpPost]
     public async Task<ActionResult<StockDto>> Create(CreateStockRequestDto stock)
     {
-      var newStock = stock.StockFromCreateRequestDto();
+      var newStock= await _stockRepository.CreateStockAsync(stock.StockFromCreateRequestDto());
 
-      await _context.Stocks.AddAsync(newStock);
-      await _context.SaveChangesAsync();
       return CreatedAtAction(nameof(GetById), new { id = newStock.Id }, newStock.ToStockDto());
     }
 
