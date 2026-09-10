@@ -13,5 +13,9 @@ namespace api.Dtos
     public string? SortBy { get; set; } = null;
     public bool? SortByDesc { get; set; } = true;
 
+    // Pagination
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+
   }
 }

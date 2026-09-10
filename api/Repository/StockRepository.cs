@@ -46,7 +46,7 @@ namespace api.Repository
         stock = stock.Where(s => s.CompanyName.Contains(query.CompanyName));
       }
 
-      if(!String.IsNullOrWhiteSpace(query.Symbol))
+      if (!String.IsNullOrWhiteSpace(query.Symbol))
       {
         stock = stock.Where(s => s.Symbol.Contains(query.Symbol));
       }
@@ -63,7 +63,25 @@ namespace api.Repository
         }
       }
 
-      return await stock.ToListAsync();
+      if (!String.IsNullOrWhiteSpace(query.SortBy))
+      {
+        if (query.SortByDesc == true)
+        {
+          stock = stock.OrderByDescending(s => s.Symbol);
+        }
+        else
+        {
+          stock = stock.OrderBy(s => s.Symbol);
+        }
+      }
+
+      // Apply pagination
+      var pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+      var pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+      const int maxPageSize = 100;
+      if (pageSize > maxPageSize) pageSize = maxPageSize;
+
+      return await stock.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
     }
 
     public async Task<Stock?> GetStockByIdAsync(int id)
