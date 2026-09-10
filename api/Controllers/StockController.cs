@@ -22,16 +22,20 @@ namespace api.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<StockDto>>> Get()
+    public async Task<ActionResult<IEnumerable<StockDto>>> Get([FromQuery] CommentListRequestQuery query)
     {
-      var stocks = await _stockRepository.GetAllStocksAsync();
+      var stocks = await _stockRepository.GetAllStocksAsync(query);
       var stockDtos = stocks.Select(s => s.ToStockDto());
       return Ok(stockDtos);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<StockDto>> GetById(int id)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
       var stock = await _stockRepository.GetStockByIdAsync(id);
       if (stock == null)
       {
@@ -47,14 +51,14 @@ namespace api.Controllers
       return CreatedAtAction(nameof(GetById), new { id = newStock.Id }, newStock.ToStockDto());
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, UpdateStockRequestDto stock)
     {
       await _stockRepository.UpdateStockAsync(id, stock);
       return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
       await _stockRepository.DeleteStockAsync(id);

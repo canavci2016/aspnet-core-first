@@ -37,9 +37,21 @@ namespace api.Repository
       }
     }
 
-    public Task<List<Stock>> GetAllStocksAsync()
+    public async Task<List<Stock>> GetAllStocksAsync(CommentListRequestQuery query)
     {
-      return _context.Stocks.Include(s => s.Comments).ToListAsync();
+      var stock = _context.Stocks.Include(s => s.Comments).AsQueryable();
+
+      if (!String.IsNullOrWhiteSpace(query.CompanyName))
+      {
+        stock = stock.Where(s => s.CompanyName.Contains(query.CompanyName));
+      }
+
+      if(!String.IsNullOrWhiteSpace(query.Symbol))
+      {
+        stock = stock.Where(s => s.Symbol.Contains(query.Symbol));
+      }
+
+      return await stock.ToListAsync();
     }
 
     public async Task<Stock?> GetStockByIdAsync(int id)
