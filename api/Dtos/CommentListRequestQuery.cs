@@ -10,6 +10,8 @@ namespace api.Dtos
 
     public string? Symbol { get; set; } = null;
     public string? CompanyName { get; set; } = null;
+    public string? SortBy { get; set; } = null;
+    public bool? SortByDesc { get; set; } = true;
 
   }
 }

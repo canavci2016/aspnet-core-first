@@ -50,6 +50,18 @@ namespace api.Repository
       {
         stock = stock.Where(s => s.Symbol.Contains(query.Symbol));
       }
+      
+      if(!String.IsNullOrWhiteSpace(query.SortBy))
+      {
+        if(query.SortByDesc == true)
+        {
+          stock = stock.OrderByDescending(s =>s.Symbol);
+        }
+        else
+        {
+          stock = stock.OrderBy(s => s.Symbol);
+        }
+      }
 
       return await stock.ToListAsync();
     }
